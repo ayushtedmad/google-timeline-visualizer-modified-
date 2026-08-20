@@ -393,7 +393,7 @@ def extract_timeline_points(data, year):
     def add_point(output, timestamp, coordinate):
         if timestamp is None or coordinate is None:
             return False
-        if timestamp.year == year:
+        if year is None or timestamp.year == year:
             output.append({'dt': timestamp, 'lat': coordinate[0], 'lon': coordinate[1]})
         return True
 
@@ -613,6 +613,7 @@ def build_argument_parser():
     parser = argparse.ArgumentParser(description="Google Timeline Visualizer")
     parser.add_argument('--input', '-i', required=True, help="Path to Timeline.json")
     parser.add_argument('--year', '-y', type=int, default=datetime.now().year, help="Year to visualize")
+    parser.add_argument('--all-years', action='store_true', help="Include all data points regardless of year")
     parser.add_argument('--output', '-o', default='travel_history.mp4', help="Output video path")
     parser.add_argument('--title', '-t', default="My Trips", help="Title displayed on video")
     parser.add_argument('--duration', '-d', type=int, default=DEFAULT_DURATION,
@@ -630,7 +631,8 @@ def main():
     args = parser.parse_args()
     
     # Load
-    timestamps, xs, ys, cum_dist, lats, lons = parse_timeline(args.input, args.year)
+    target_year = None if args.all_years else args.year
+    timestamps, xs, ys, cum_dist, lats, lons = parse_timeline(args.input, target_year)
     
     total_km = cum_dist[-1]
     print(f"Total distance: {total_km:.1f} km")
