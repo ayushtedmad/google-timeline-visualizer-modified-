@@ -300,7 +300,8 @@ export function drawFrame(
   context.fillText(title || 'My Journey', size / 2, 72 * scale, size - 104 * scale);
   context.fillStyle = '#5c4b52';
   context.font = `${20 * scale}px -apple-system, BlinkMacSystemFont, sans-serif`;
-  context.fillText(periodLabel, size / 2, 108 * scale);
+  const distanceText = `${Math.round(currentDistance)} km`;
+  context.fillText(`${periodLabel}  ·  ${distanceText}`, size / 2, 108 * scale);
 
   context.textAlign = 'right';
   context.fillStyle = 'rgba(36, 25, 29, 0.78)';
