@@ -615,6 +615,8 @@ def build_argument_parser():
     parser.add_argument('--year', '-y', type=int, default=datetime.now().year, help="Year to visualize")
     parser.add_argument('--output', '-o', default='travel_history.mp4', help="Output video path")
     parser.add_argument('--title', '-t', default="My Trips", help="Title displayed on video")
+    parser.add_argument('--duration', '-d', type=int, default=DEFAULT_DURATION,
+                        help="Video duration in seconds (e.g., 60, 90, 120, 180)")
     parser.add_argument('--camera-movement', choices=CAMERA_MOVEMENTS, default='steady',
                         help="Camera behavior: fixed, steady, or dynamic")
     parser.add_argument('--long-trip-compression', choices=COMPRESSION_EXPONENTS, default='balanced',
@@ -634,9 +636,10 @@ def main():
     print(f"Total distance: {total_km:.1f} km")
     
     # Prepare frame positions from softened distance timing while retaining raw route geometry.
-    total_frames = DEFAULT_FPS * DEFAULT_DURATION
+    duration = args.duration if hasattr(args, 'duration') else DEFAULT_DURATION
+    total_frames = DEFAULT_FPS * duration
     distance_at = build_journey_timing(cum_dist, args.long_trip_compression)
-    print(f"Target: {DEFAULT_DURATION}s @ {DEFAULT_FPS}fps. Compression: {args.long_trip_compression}")
+    print(f"Target: {duration}s @ {DEFAULT_FPS}fps. Compression: {args.long_trip_compression}")
 
     frame_progress = [i / total_frames for i in range(total_frames)]
     frames_dist = [distance_at(progress) for progress in frame_progress]
@@ -682,6 +685,10 @@ def main():
                         color='gray', fontsize=14, ha='center', va='top',
                         bbox=dict(facecolor='white', alpha=0.5, edgecolor='none', pad=3))
 
+    km_text = ax.text(0.5, 0.85, '', transform=ax.transAxes, 
+                      color='gray', fontsize=14, ha='center', va='top',
+                      bbox=dict(facecolor='white', alpha=0.5, edgecolor='none', pad=3))
+
     def update(i):
         frame_idx = frame_indices[i]
         cx, cy = cam_centers[i]
@@ -716,7 +723,9 @@ def main():
         if timestamps:
             date_text.set_text(timestamps[frame_idx].strftime('%B %Y'))
             
-        return map_layer, path_line, tail_line, head_point, date_text,
+        km_text.set_text(f"{curr_km:.1f} km")
+            
+        return map_layer, path_line, tail_line, head_point, date_text, km_text,
 
     print(f"Generating {len(frame_indices)} frames...")
     ani = animation.FuncAnimation(fig, update, frames=len(frame_indices), blit=False)

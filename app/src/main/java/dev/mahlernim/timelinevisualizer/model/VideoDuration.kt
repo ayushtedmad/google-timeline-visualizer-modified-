@@ -6,7 +6,7 @@ object VideoDuration {
     const val DEFAULT_SECONDS = 30
     const val LONG_DURATION_SECONDS = 60
 
-    val presets: List<Int> = listOf(10, 15, 20, 30, 45, 60)
+    val presets: List<Int> = listOf(10, 15, 20, 30, 45, 60, 120, 180)
 
     fun parseCustom(raw: CharSequence?): Int? {
         val text = raw?.toString()?.trim().orEmpty()

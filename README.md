@@ -185,7 +185,7 @@ Python 3.9+, FFmpeg, and the packages in `requirements.txt`.
 ```bash
 python -m pip install -r requirements.txt
 python visualizer.py --input Timeline.json --year 2025 --camera-movement steady \
-  --long-trip-compression balanced --output my_trip_2025.mp4
+  --long-trip-compression balanced --duration 120 --output my_trip_2025.mp4
 ```
 
 ## Build and test
